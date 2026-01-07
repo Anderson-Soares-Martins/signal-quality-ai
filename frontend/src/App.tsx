@@ -1,25 +1,32 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles, Wand2, Settings, Webhook } from "lucide-react";
 import { ScenarioSelector } from "@/components/ScenarioSelector";
+import { CustomSignalInput } from "@/components/CustomSignalInput";
+import { SignalConfiguration } from "@/components/SignalConfiguration";
+import { WebhookSimulator } from "@/components/WebhookSimulator";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { AnalysisSummary } from "@/components/AnalysisSummary";
 import { SignalBreakdown } from "@/components/SignalBreakdown";
 import { SignalTimeline } from "@/components/SignalTimeline";
 import { ActionRecommendation } from "@/components/ActionRecommendation";
 import { analyzeSignals, getExample } from "@/api";
-import type { AnalysisResult, ExampleScenario } from "@/types";
+import type { AnalysisResult, ExampleScenario, Signal, Prospect } from "@/types";
 
 function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [scenario, setScenario] = useState<ExampleScenario | null>(null);
+  const [customSignals, setCustomSignals] = useState<Signal[] | null>(null);
+  const [customProspect, setCustomProspect] = useState<Prospect | null>(null);
 
   const handleScenarioSelect = async (scenarioId: string) => {
     setLoading(true);
     setResult(null);
     setScenario(null);
+    setCustomSignals(null);
+    setCustomProspect(null);
 
     try {
       // Fetch example scenario
@@ -41,9 +48,95 @@ function App() {
     }
   };
 
+  const handleCustomAnalysis = async (signals: Signal[], prospect: Prospect) => {
+    setLoading(true);
+    setResult(null);
+    setScenario(null);
+    setCustomSignals(signals);
+    setCustomProspect(prospect);
+
+    try {
+      const analysisResult = await analyzeSignals(signals, prospect, { generateMessage: true });
+      setResult(analysisResult);
+    } catch (error) {
+      console.error("Analysis failed:", error);
+      alert("Failed to analyze signals. Make sure the backend is running on port 3000.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleReset = () => {
     setResult(null);
     setScenario(null);
+    setCustomSignals(null);
+    setCustomProspect(null);
+  };
+
+  // Results view (shared between demo scenarios and custom analysis)
+  const ResultsView = () => {
+    if (!result) return null;
+
+    const signals = scenario?.signals || customSignals || [];
+    const prospect = scenario?.prospect || customProspect;
+
+    return (
+      <div className="space-y-6">
+        {/* Prospect Info */}
+        {prospect && (
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border">
+            {scenario && <h3 className="font-semibold mb-2">Scenario: {scenario.description}</h3>}
+            {!scenario && <h3 className="font-semibold mb-2">Custom Analysis</h3>}
+            <div className="flex gap-4 text-sm text-muted-foreground">
+              <span>Company: {prospect.company}</span>
+              {prospect.name && <span>Contact: {prospect.name}</span>}
+              {prospect.role && <span>Role: {prospect.role}</span>}
+              <span>Signals: {signals.length}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Results Layout */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Left Column - Score */}
+          <div className="lg:col-span-1">
+            <ScoreGauge
+              score={result.qualityScore}
+              confidence={result.confidence}
+              priorityLevel={result.priorityLevel}
+            />
+          </div>
+
+          {/* Right Column - Details */}
+          <div className="lg:col-span-2">
+            <Tabs defaultValue="summary" className="space-y-4">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="summary">Summary</TabsTrigger>
+                <TabsTrigger value="signals">Signals</TabsTrigger>
+                <TabsTrigger value="action">Action</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="summary" className="space-y-4">
+                <AnalysisSummary analysis={result.analysis} />
+              </TabsContent>
+
+              <TabsContent value="signals" className="space-y-4">
+                <SignalBreakdown breakdown={result.signalBreakdown} />
+                {signals.length > 0 && <SignalTimeline signals={signals} />}
+              </TabsContent>
+
+              <TabsContent value="action" className="space-y-4">
+                <ActionRecommendation
+                  action={result.recommendedAction}
+                  outcome={result.estimatedOutcome}
+                  patterns={result.matchedPatterns}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -58,69 +151,51 @@ function App() {
           {result && (
             <Button variant="outline" onClick={handleReset}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Scenarios
+              Back
             </Button>
           )}
         </div>
 
         {/* Main Content */}
         {!result ? (
-          <ScenarioSelector onSelect={handleScenarioSelect} loading={loading} />
+          <Tabs defaultValue="demo" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="demo" className="gap-2">
+                <Sparkles className="h-4 w-4" />
+                Demo Scenarios
+              </TabsTrigger>
+              <TabsTrigger value="custom" className="gap-2">
+                <Wand2 className="h-4 w-4" />
+                Custom Analysis
+              </TabsTrigger>
+              <TabsTrigger value="config" className="gap-2">
+                <Settings className="h-4 w-4" />
+                Configuration
+              </TabsTrigger>
+              <TabsTrigger value="simulator" className="gap-2">
+                <Webhook className="h-4 w-4" />
+                Webhook Simulator
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="demo">
+              <ScenarioSelector onSelect={handleScenarioSelect} loading={loading} />
+            </TabsContent>
+
+            <TabsContent value="custom">
+              <CustomSignalInput onAnalyze={handleCustomAnalysis} loading={loading} />
+            </TabsContent>
+
+            <TabsContent value="config">
+              <SignalConfiguration />
+            </TabsContent>
+
+            <TabsContent value="simulator">
+              <WebhookSimulator />
+            </TabsContent>
+          </Tabs>
         ) : (
-          <div className="space-y-6">
-            {/* Prospect Info */}
-            {scenario && (
-              <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border">
-                <h3 className="font-semibold mb-2">Scenario: {scenario.description}</h3>
-                <div className="flex gap-4 text-sm text-muted-foreground">
-                  <span>Company: {scenario.prospect.company}</span>
-                  {scenario.prospect.name && <span>Contact: {scenario.prospect.name}</span>}
-                  {scenario.prospect.role && <span>Role: {scenario.prospect.role}</span>}
-                  <span>Signals: {scenario.signals.length}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Results Layout */}
-            <div className="grid lg:grid-cols-3 gap-6">
-              {/* Left Column - Score */}
-              <div className="lg:col-span-1">
-                <ScoreGauge
-                  score={result.qualityScore}
-                  confidence={result.confidence}
-                  priorityLevel={result.priorityLevel}
-                />
-              </div>
-
-              {/* Right Column - Details */}
-              <div className="lg:col-span-2">
-                <Tabs defaultValue="summary" className="space-y-4">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="summary">Summary</TabsTrigger>
-                    <TabsTrigger value="signals">Signals</TabsTrigger>
-                    <TabsTrigger value="action">Action</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="summary" className="space-y-4">
-                    <AnalysisSummary analysis={result.analysis} />
-                  </TabsContent>
-
-                  <TabsContent value="signals" className="space-y-4">
-                    <SignalBreakdown breakdown={result.signalBreakdown} />
-                    {scenario && <SignalTimeline signals={scenario.signals} />}
-                  </TabsContent>
-
-                  <TabsContent value="action" className="space-y-4">
-                    <ActionRecommendation
-                      action={result.recommendedAction}
-                      outcome={result.estimatedOutcome}
-                      patterns={result.matchedPatterns}
-                    />
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-          </div>
+          <ResultsView />
         )}
       </div>
     </div>

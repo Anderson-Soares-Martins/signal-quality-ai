@@ -33,43 +33,159 @@ const anthropic = new Anthropic({
 });
 
 /**
- * Build prompt for LLM context extraction
+ * Build signal-specific analysis guidelines
+ */
+function getSignalSpecificGuidelines(signal: Signal): string {
+  const type = signal.type;
+  const metadata = signal.metadata || {};
+  const hasContent = 'content' in signal || 'text' in signal;
+  const content = (signal as any).content || (signal as any).text || '';
+
+  let guidelines = '\n### SIGNAL-SPECIFIC ANALYSIS:\n';
+
+  if (type.includes('linkedin') || type.includes('social')) {
+    guidelines += `
+This is a SOCIAL MEDIA signal. Pay special attention to:
+- If there's text/comment content, analyze it deeply for pain points, urgency words, and buying intent
+- Look for specific problems mentioned (e.g., "we're struggling with X", "need solution for Y")
+- Detect urgency indicators: "ASAP", "yesterday", "urgent", "deadline", time pressure
+- Identify decision-making authority hints: "my team", "we're evaluating", "I'm responsible for"
+- Assess public commitment level (commenting publicly = higher intent than private viewing)
+${hasContent ? `\nCOMMENT/POST TEXT TO ANALYZE:\n"${content}"\n` : ''}
+Engagement type: ${metadata.action || 'unknown'}
+Topic context: ${metadata.postTopic || metadata.topic || 'unknown'}`;
+  }
+
+  else if (type.includes('pricing') || type.includes('demo')) {
+    guidelines += `
+This is a HIGH-INTENT signal (pricing/demo). Deep dive into:
+- Visit duration (longer = higher intent): ${(signal as any).duration || 'unknown'}s
+- Repeat visits (shows persistence): Visit #${(signal as any).visitNumber || 1}
+- Tier/plan viewed: ${metadata.tier_viewed || metadata.plan || 'unknown'}
+- Form fields filled (if demo request): Look for budget, timeline, team size mentions
+- Page sequence: Did they come from case studies or direct? (Referrer: ${metadata.referrer || 'unknown'})
+- CRITICAL: Pricing page + demo request within 24h = extremely high intent`;
+  }
+
+  else if (type.includes('website') || type.includes('visit')) {
+    guidelines += `
+This is a WEBSITE VISIT signal. Evaluate:
+- Page topic and depth: ${(signal as any).page || 'unknown'}
+- Time spent (indicates genuine interest vs bounce): ${(signal as any).duration || 'unknown'}s
+- Visit frequency: ${(signal as any).visitNumber || 1}
+- Path analysis: What did they view before/after?
+- Content depth: Case study = mid-funnel, pricing = bottom-funnel, blog = top-funnel
+Referrer source: ${metadata.referrer || 'direct'}`;
+  }
+
+  else if (type.includes('email')) {
+    guidelines += `
+This is an EMAIL ENGAGEMENT signal. Analyze:
+- Open count (1 = curiosity, 3+ = real interest): ${metadata.opens || 1}
+- Time spent reading: ${metadata.timeSpent || 'unknown'}
+- Links clicked (which ones and how many): ${metadata.linksClicked || 'unknown'}
+- Reply behavior: ${metadata.replied ? 'YES - very high intent' : 'No reply'}
+- Forward/share behavior: ${metadata.forwarded ? 'YES - involving others' : 'Not forwarded'}`;
+  }
+
+  else if (type.includes('content') || type.includes('download')) {
+    guidelines += `
+This is a CONTENT DOWNLOAD signal. Consider:
+- Asset type: ${(signal as any).asset || metadata.assetType || 'unknown'}
+- Topic relevance: ${metadata.topic || 'unknown'}
+- Funnel stage: Whitepaper/Guide = consideration, ROI Calculator = decision stage
+- Gating level: Did they provide work email, phone, company size?`;
+  }
+
+  else if (type.includes('job') || type.includes('role')) {
+    guidelines += `
+This is a JOB CHANGE signal. Critical factors:
+- Seniority change: ${metadata.seniorityIncrease ? 'PROMOTED - likely has budget' : 'Lateral move'}
+- Days in new role: ${(signal as any).daysInRole || 'unknown'} (30-90 days = buying window)
+- Company context: ${metadata.companyStage || 'unknown'}
+- New problems to solve: New VP = need to prove value quickly = high buying intent`;
+  }
+
+  else if (type.includes('trial') || type.includes('product')) {
+    guidelines += `
+This is a PRODUCT TRIAL signal. VERY HIGH INTENT. Analyze:
+- Trial length and usage: ${metadata.trialDuration || 'unknown'}
+- Features used (power users = qualified): ${metadata.featuresUsed || 'unknown'}
+- Team invites (involving others = buying committee forming): ${metadata.teamSize || 'unknown'}
+- Upgrade path clicked: ${metadata.upgradePath ? 'YES - ready to buy' : 'Not yet'}`;
+  }
+
+  return guidelines;
+}
+
+/**
+ * Build enhanced prompt for LLM context extraction with signal-specific analysis
  */
 function buildExtractionPrompt(signal: Signal, prospect: Prospect): string {
   const signalDescription = JSON.stringify(signal, null, 2);
   const prospectDescription = JSON.stringify(prospect, null, 2);
+  const specificGuidelines = getSignalSpecificGuidelines(signal);
 
-  return `You are analyzing a buyer intent signal to extract qualitative insights.
+  return `You are an expert B2B sales intelligence analyst specializing in buyer intent signal analysis.
+
+Your job is to extract DEEP qualitative insights from this signal, going beyond surface-level analysis.
 
 SIGNAL DATA:
 ${signalDescription}
 
 PROSPECT CONTEXT:
 ${prospectDescription}
+${specificGuidelines}
 
-Analyze this signal and extract the following insights:
+### ANALYSIS INSTRUCTIONS:
 
-1. Pain Points: What explicit problems or needs are mentioned or implied?
-2. Urgency: How urgent is this need? (low/medium/high)
-3. Specificity: How specific is this signal? (low/medium/high)
-4. Buying Stage: What stage of the buying journey? (awareness/consideration/decision/unknown)
-5. Sentiment: What is the sentiment? (positive/negative/neutral)
-6. False Positive Risk: How likely is this a false positive? (low/medium/high)
-7. Confidence: How confident are you in this analysis? (0-1)
+1. **Pain Points**: Extract specific, actionable pain points
+   - Look for explicit problems mentioned in text
+   - Infer implicit needs from behavior patterns
+   - Quantify impact when mentioned (e.g., "50 reps spending 4+ hours")
 
-Respond ONLY with a valid JSON object in this exact format (no markdown, just JSON):
+2. **Urgency Indicators**: Detect time pressure
+   - Words: "ASAP", "urgent", "yesterday", "deadline", "quickly"
+   - Behavioral: Multiple visits in short timeframe, weekend/evening activity
+   - Contextual: New in role, funding event, competitor mention
+
+3. **Specificity**: How targeted is this signal?
+   - Generic research (low) vs specific solution evaluation (high)
+   - Product-specific pages/content vs general awareness
+
+4. **Buying Stage**: Where are they in the journey?
+   - Awareness: Blog, general content
+   - Consideration: Case studies, comparison pages, features
+   - Decision: Pricing, demo, ROI calculator, trials
+
+5. **Sentiment**: Emotional tone (if text available)
+   - Frustration = pain (good)
+   - Enthusiasm = interest (good)
+   - Skepticism = needs nurturing
+
+6. **False Positive Risk**: Red flags
+   - Student email, competitor, wrong industry
+   - Bot-like behavior (< 10s on page)
+   - No decision-making authority hints
+
+7. **Key Insights**: Actionable intelligence for SDRs
+   - What to mention in outreach
+   - Timing recommendations
+   - Objection handling prep
+
+Respond ONLY with valid JSON (no markdown):
 {
-  "painPoints": ["pain point 1", "pain point 2"],
+  "painPoints": ["specific pain 1 with quantification if available", "pain 2"],
   "urgency": "low|medium|high",
-  "urgencyReasoning": "why this urgency level",
+  "urgencyReasoning": "detailed explanation with evidence",
   "specificity": "low|medium|high",
-  "specificityReasoning": "why this specificity level",
+  "specificityReasoning": "why this level",
   "buyingStage": "awareness|consideration|decision|unknown",
   "sentiment": "positive|negative|neutral",
   "falsePositiveRisk": "low|medium|high",
   "falsePositiveReasons": ["reason 1", "reason 2"],
   "confidence": 0.85,
-  "keyInsights": ["insight 1", "insight 2"]
+  "keyInsights": ["actionable insight 1", "insight 2", "insight 3"]
 }`;
 }
 
