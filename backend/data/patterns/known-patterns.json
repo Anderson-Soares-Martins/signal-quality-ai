@@ -1,0 +1,147 @@
+[
+  {
+    "id": "engaged_evaluator",
+    "name": "Engaged Evaluator",
+    "description": "Combination of public engagement + private research + educational content consumption",
+    "requiredSignals": [
+      {
+        "type": "linkedin_engagement",
+        "action": "commented",
+        "minScore": 70
+      },
+      {
+        "type": "website_visit",
+        "page_includes": "pricing",
+        "minVisits": 2
+      }
+    ],
+    "optionalSignals": [
+      {
+        "type": "content_download",
+        "category": "case_study"
+      }
+    ],
+    "historicalConversion": 73,
+    "avgDaysToClose": 14,
+    "confidence": 0.85,
+    "weight": 100
+  },
+  {
+    "id": "new_role_evaluator",
+    "name": "New Role Evaluator",
+    "description": "New decision-maker + company growth + team expansion signals",
+    "requiredSignals": [
+      {
+        "type": "job_change",
+        "daysInRole_min": 15,
+        "daysInRole_max": 90
+      }
+    ],
+    "optionalSignals": [
+      {
+        "type": "company_news",
+        "newsType": "funding"
+      },
+      {
+        "type": "hiring_signals",
+        "department": "sales"
+      },
+      {
+        "type": "website_visit",
+        "page_includes": "pricing"
+      }
+    ],
+    "historicalConversion": 58,
+    "avgDaysToClose": 45,
+    "confidence": 0.75,
+    "weight": 85
+  },
+  {
+    "id": "active_evaluator_with_budget",
+    "name": "Active Evaluator with Budget",
+    "description": "Public pain point + pricing research + technical validation + recent funding",
+    "requiredSignals": [
+      {
+        "type": "linkedin_engagement",
+        "painPoint": true
+      },
+      {
+        "type": "website_visit",
+        "page_includes": "pricing"
+      }
+    ],
+    "optionalSignals": [
+      {
+        "type": "content_download",
+        "bofu": true
+      },
+      {
+        "type": "company_news",
+        "newsType": "funding"
+      }
+    ],
+    "historicalConversion": 81,
+    "avgDaysToClose": 12,
+    "confidence": 0.9,
+    "weight": 120
+  },
+  {
+    "id": "competitor_researcher",
+    "name": "Competitor Researcher (False Positive)",
+    "description": "Shallow engagement across channels, likely competitor or student",
+    "requiredSignals": [
+      {
+        "type": "website_visit",
+        "duration_max": 60,
+        "bounceRate_min": 0.8
+      }
+    ],
+    "optionalSignals": [
+      {
+        "type": "linkedin_engagement",
+        "action": "liked",
+        "noComment": true
+      },
+      {
+        "type": "email_interaction",
+        "action": "opened",
+        "clickedLink": false
+      }
+    ],
+    "historicalConversion": 4,
+    "avgDaysToClose": null,
+    "confidence": 0.78,
+    "weight": -50,
+    "isFalsePositive": true
+  },
+  {
+    "id": "ready_to_buy",
+    "name": "Ready to Buy",
+    "description": "Multiple bottom-of-funnel signals indicating imminent purchase",
+    "requiredSignals": [
+      {
+        "type": "website_visit",
+        "page_includes": "pricing",
+        "minVisits": 3
+      },
+      {
+        "type": "content_download",
+        "bofu": true
+      }
+    ],
+    "optionalSignals": [
+      {
+        "type": "email_interaction",
+        "action": "reply"
+      },
+      {
+        "type": "website_visit",
+        "page_includes": "demo"
+      }
+    ],
+    "historicalConversion": 87,
+    "avgDaysToClose": 7,
+    "confidence": 0.92,
+    "weight": 150
+  }
+]

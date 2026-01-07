@@ -1,0 +1,74 @@
+{
+  "description": "High-quality signal cluster - Active evaluator with clear pain points and budget",
+  "signals": [
+    {
+      "type": "linkedin_engagement",
+      "action": "commented",
+      "content": "Our sales team is drowning in admin work. 50 reps spending 4+ hours daily on CRM updates instead of selling. Need a solution that works with Salesforce yesterday.",
+      "timestamp": "2026-01-02T09:15:00Z",
+      "metadata": {
+        "postTopic": "sales_automation",
+        "postAuthor": "industry_thought_leader"
+      }
+    },
+    {
+      "type": "website_visit",
+      "page": "/pricing",
+      "duration": 240,
+      "visitNumber": 3,
+      "timestamp": "2026-01-02T14:30:00Z",
+      "metadata": {
+        "referrer": "linkedin",
+        "tier_viewed": "enterprise"
+      }
+    },
+    {
+      "type": "website_visit",
+      "page": "/case-studies/salesforce-integration",
+      "duration": 420,
+      "timestamp": "2026-01-02T15:00:00Z"
+    },
+    {
+      "type": "content_download",
+      "asset": "Enterprise Implementation Guide",
+      "timestamp": "2026-01-02T15:30:00Z",
+      "metadata": {
+        "topic": "salesforce_integration"
+      }
+    },
+    {
+      "type": "job_change",
+      "fromCompany": "OldCorp",
+      "toCompany": "FastGrow SaaS",
+      "fromRole": "Sales Manager",
+      "toRole": "VP Sales",
+      "startDate": "2025-12-05",
+      "daysInRole": 29,
+      "metadata": {
+        "seniorityIncrease": true,
+        "companyStage": "series_b"
+      }
+    },
+    {
+      "type": "company_news",
+      "newsType": "funding",
+      "details": "Series B $40M",
+      "timestamp": "2025-11-20T00:00:00Z"
+    }
+  ],
+  "prospect": {
+    "name": "Jane Doe",
+    "email": "jane@fastgrowsaas.com",
+    "company": "FastGrow SaaS",
+    "role": "VP Sales",
+    "industry": "B2B SaaS",
+    "companySize": "100-250",
+    "location": "San Francisco, CA"
+  },
+  "expectedOutcome": {
+    "qualityScore": "90+",
+    "priorityLevel": "urgent",
+    "conversionProbability": "0.75+",
+    "reasoning": "Exceptionally high-quality signal cluster with explicit pain point, budget, authority, and urgency"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Mixed signals - Moderate interest but insufficient data for confident assessment",
+  "signals": [
+    {
+      "type": "website_visit",
+      "page": "/pricing",
+      "duration": 90,
+      "timestamp": "2026-01-02T11:00:00Z"
+    },
+    {
+      "type": "job_change",
+      "fromCompany": "StartupInc",
+      "toCompany": "MidMarket Inc",
+      "fromRole": "Sales Manager",
+      "toRole": "Director of Sales",
+      "startDate": "2025-11-15",
+      "daysInRole": 49,
+      "metadata": {
+        "seniorityIncrease": true
+      }
+    }
+  ],
+  "prospect": {
+    "company": "MidMarket Inc",
+    "role": "Director of Sales",
+    "industry": "Manufacturing",
+    "companySize": "100-250"
+  },
+  "expectedOutcome": {
+    "qualityScore": "50-60",
+    "priorityLevel": "medium or monitor",
+    "conversionProbability": "0.40-0.50",
+    "reasoning": "Some positive signals (pricing visit, new role in evaluation window) but lacks qualitative context, no repeated engagement, missing pain point articulation. Needs more signals before outreach."
+  }
+}

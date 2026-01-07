@@ -1,0 +1,146 @@
+{
+  "signalTypeWeights": {
+    "linkedin_engagement": {
+      "baseWeight": 0.25,
+      "description": "Social media engagement, valuable for pain point discovery",
+      "actions": {
+        "commented": 1.0,
+        "connection_request": 0.7,
+        "share": 0.75,
+        "like": 0.3,
+        "follow": 0.4
+      }
+    },
+    "website_visit": {
+      "baseWeight": 0.22,
+      "description": "Direct research behavior, indicates active evaluation",
+      "pages": {
+        "pricing": 1.0,
+        "demo": 0.95,
+        "enterprise": 0.9,
+        "contact": 0.85,
+        "features": 0.6,
+        "case-studies": 0.7,
+        "blog": 0.3
+      }
+    },
+    "content_download": {
+      "baseWeight": 0.18,
+      "description": "Content consumption shows educational engagement",
+      "types": {
+        "implementation_guide": 1.0,
+        "enterprise_guide": 0.95,
+        "case_study": 0.8,
+        "whitepaper": 0.7,
+        "ebook": 0.5
+      }
+    },
+    "email_interaction": {
+      "baseWeight": 0.15,
+      "description": "Direct communication engagement",
+      "actions": {
+        "reply": 1.0,
+        "clicked": 0.7,
+        "opened": 0.25
+      }
+    },
+    "job_change": {
+      "baseWeight": 0.1,
+      "description": "Context signal, indicates evaluation window",
+      "roleTypes": {
+        "vp_level": 1.0,
+        "director_level": 0.85,
+        "manager_level": 0.6
+      }
+    },
+    "company_news": {
+      "baseWeight": 0.08,
+      "description": "Context signal for budget and urgency",
+      "newsTypes": {
+        "funding": 1.0,
+        "expansion": 0.8,
+        "leadership_change": 0.6,
+        "acquisition": 0.55
+      }
+    },
+    "hiring_signals": {
+      "baseWeight": 0.07,
+      "description": "Team growth indicates potential infrastructure needs",
+      "departments": {
+        "sales": 1.0,
+        "customer_success": 0.8,
+        "engineering": 0.6
+      }
+    },
+    "tech_stack_change": {
+      "baseWeight": 0.12,
+      "description": "Direct indication of tool evaluation",
+      "actions": {
+        "removed": 1.0,
+        "evaluation": 0.9,
+        "added": 0.5
+      }
+    },
+    "intent_data": {
+      "baseWeight": 0.1,
+      "description": "Third-party research signals",
+      "intents": {
+        "competitor_comparison": 1.0,
+        "pricing_research": 0.9,
+        "general_research": 0.5
+      }
+    }
+  },
+  "contextMultipliers": {
+    "urgency": {
+      "high": 1.3,
+      "medium": 1.0,
+      "low": 0.7
+    },
+    "specificity": {
+      "high": 1.25,
+      "medium": 1.0,
+      "low": 0.8
+    },
+    "buyingStage": {
+      "decision": 1.4,
+      "consideration": 1.15,
+      "awareness": 0.9,
+      "unknown": 0.85
+    },
+    "falsePositiveRisk": {
+      "low": 1.2,
+      "medium": 1.0,
+      "high": 0.6
+    }
+  },
+  "temporalMultipliers": {
+    "recency": {
+      "description": "How recent the signal is (0-1 score)",
+      "weight": 1.2,
+      "calculation": "score * (1 + (recency - 0.5))"
+    },
+    "velocity": {
+      "increasing": 1.2,
+      "stable": 1.0,
+      "decreasing": 0.8
+    }
+  },
+  "prospectFitMultipliers": {
+    "companySize": {
+      "enterprise": 1.2,
+      "midmarket": 1.0,
+      "smb": 0.9
+    },
+    "industry": {
+      "saas": 1.15,
+      "technology": 1.1,
+      "other": 1.0
+    }
+  },
+  "scoringWeights": {
+    "individualSignals": 0.4,
+    "patternMatching": 0.4,
+    "prospectFit": 0.2
+  }
+}

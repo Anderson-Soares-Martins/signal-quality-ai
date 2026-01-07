@@ -1,0 +1,26 @@
+{
+  "name": "signal-quality-ai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered system that analyzes and scores the quality of buyer intent signals",
+  "scripts": {
+    "dev": "pnpm --filter backend dev & pnpm --filter frontend dev",
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "build": "pnpm --filter backend build && pnpm --filter frontend build",
+    "build:backend": "pnpm --filter backend build",
+    "build:frontend": "pnpm --filter frontend build",
+    "start:backend": "pnpm --filter backend start",
+    "demo": "pnpm --filter backend demo",
+    "test": "pnpm --filter backend test"
+  },
+  "keywords": [
+    "sales",
+    "ai",
+    "signals",
+    "lead-scoring",
+    "b2b"
+  ],
+  "author": "",
+  "license": "MIT"
+}

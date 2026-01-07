@@ -1,0 +1,38 @@
+{
+  "description": "False positive - Shallow engagement indicating competitor research or low intent",
+  "signals": [
+    {
+      "type": "website_visit",
+      "page": "/features",
+      "duration": 45,
+      "bounceRate": 0.9,
+      "timestamp": "2026-01-02T10:00:00Z"
+    },
+    {
+      "type": "linkedin_engagement",
+      "action": "liked",
+      "timestamp": "2026-01-01T16:00:00Z",
+      "metadata": {
+        "postTopic": "product_launch"
+      }
+    },
+    {
+      "type": "email_interaction",
+      "action": "opened",
+      "clickedLink": false,
+      "timestamp": "2025-12-28T08:00:00Z"
+    }
+  ],
+  "prospect": {
+    "company": "CompetitorCo",
+    "role": "Product Manager",
+    "industry": "Sales Software",
+    "companySize": "51-200"
+  },
+  "expectedOutcome": {
+    "qualityScore": "20-30",
+    "priorityLevel": "ignore",
+    "conversionProbability": "0.05 or less",
+    "reasoning": "Shallow engagement, high bounce rate, works at competitor, no depth of research - clear false positive"
+  }
+}
