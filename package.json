@@ -2,7 +2,7 @@
   "name": "signal-quality-ai-monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.26.1",
+  "packageManager": "pnpm@9.15.0",
   "description": "AI-powered system that analyzes and scores the quality of buyer intent signals",
   "scripts": {
     "dev": "turbo run dev",

@@ -1,8 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "turbo run build --filter=frontend",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "installCommand": "pnpm install",
-  "devCommand": "pnpm dev"
+  "framework": "vite"
 }
