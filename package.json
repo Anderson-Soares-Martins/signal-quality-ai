@@ -20,8 +20,5 @@
     "b2b"
   ],
   "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "turbo": "^2.7.3"
-  }
+  "license": "MIT"
 }
