@@ -2,19 +2,15 @@
   "name": "signal-quality-ai-monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "yarn@1.22.22",
   "description": "AI-powered system that analyzes and scores the quality of buyer intent signals",
   "scripts": {
-    "dev": "turbo run dev",
-    "dev:backend": "turbo run dev --filter=backend",
-    "dev:frontend": "turbo run dev --filter=frontend",
-    "build": "turbo run build",
-    "build:backend": "turbo run build --filter=backend",
-    "build:frontend": "turbo run build --filter=frontend",
-    "start:backend": "pnpm --filter backend start",
-    "demo": "pnpm --filter backend demo",
-    "test": "turbo run test",
-    "lint": "turbo run lint"
+    "dev": "echo 'Please run dev:frontend or dev:backend'",
+    "dev:backend": "cd backend && yarn dev",
+    "dev:frontend": "cd frontend && yarn dev",
+    "build": "echo 'Please run build:frontend or build:backend'",
+    "build:backend": "cd backend && yarn build",
+    "build:frontend": "cd frontend && yarn build"
   },
   "keywords": [
     "sales",
