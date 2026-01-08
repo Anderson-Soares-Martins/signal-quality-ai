@@ -16,7 +16,16 @@ export async function analyzeSignals(
   });
 
   if (!response.ok) {
-    throw new Error(`Analysis failed: ${response.statusText}`);
+    let errorMessage = `Analysis failed: ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.error) {
+        errorMessage = errorData.error;
+      }
+    } catch {
+      // If response is not JSON, use statusText
+    }
+    throw new Error(errorMessage);
   }
 
   return response.json();

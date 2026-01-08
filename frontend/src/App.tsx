@@ -42,7 +42,8 @@ function App() {
       setResult(analysisResult);
     } catch (error) {
       console.error("Analysis failed:", error);
-      alert("Failed to analyze signals. Make sure the backend is running on port 3000.");
+      const errorMessage = error instanceof Error ? error.message : "Failed to connect to the backend API. Please check your connection.";
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -60,7 +61,8 @@ function App() {
       setResult(analysisResult);
     } catch (error) {
       console.error("Analysis failed:", error);
-      alert("Failed to analyze signals. Make sure the backend is running on port 3000.");
+      const errorMessage = error instanceof Error ? error.message : "Failed to connect to the backend API. Please check your connection.";
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
