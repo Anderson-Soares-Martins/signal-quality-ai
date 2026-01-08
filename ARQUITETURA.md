@@ -644,3 +644,4 @@ Esta aplicação implementa um pipeline completo de análise de sinais de buyer 
 
 O sistema é modular, extensível e projetado para escalar conforme novos dados e padrões são descobertos.
 
+

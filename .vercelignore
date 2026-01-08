@@ -1,0 +1,29 @@
+# Development
+node_modules
+.env.local
+.env.*.local
+
+# Build cache
+.turbo
+.next
+dist
+
+# Testing
+coverage
+*.test.ts
+*.spec.ts
+__tests__
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

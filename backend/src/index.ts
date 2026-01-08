@@ -26,21 +26,24 @@ app.use(notFoundHandler);
 // Error handler (must be last)
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  logger.info(`🚀 Signal Quality Score AI API running on port ${PORT}`);
-  logger.info('LLM Provider: Anthropic Claude Sonnet 4');
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info('');
-  logger.info('Available endpoints:');
-  logger.info('  GET  /api/health - Health check');
-  logger.info('  POST /api/analyze - Analyze signals');
-  logger.info('  GET  /api/patterns - Get known patterns');
-  logger.info('  POST /api/feedback - Submit feedback');
-  logger.info('  GET  /api/examples/:type - Get example scenarios');
-  logger.info('');
-  logger.info(`Try: curl http://localhost:${PORT}/api/health`);
-});
+// Start server (only in development, not in Vercel serverless)
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    logger.info(`🚀 Signal Quality Score AI API running on port ${PORT}`);
+    logger.info('LLM Provider: Anthropic Claude Sonnet 4');
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info('');
+    logger.info('Available endpoints:');
+    logger.info('  GET  /api/health - Health check');
+    logger.info('  POST /api/analyze - Analyze signals');
+    logger.info('  GET  /api/patterns - Get known patterns');
+    logger.info('  POST /api/feedback - Submit feedback');
+    logger.info('  GET  /api/examples/:type - Get example scenarios');
+    logger.info('');
+    logger.info(`Try: curl http://localhost:${PORT}/api/health`);
+  });
+}
 
+// Export for Vercel serverless
 export default app;
 
