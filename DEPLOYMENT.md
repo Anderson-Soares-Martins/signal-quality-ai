@@ -7,20 +7,23 @@ Este guia contém instruções passo a passo para fazer deploy do projeto na Ver
 - Conta na [Vercel](https://vercel.com)
 - Repositório Git (GitHub, GitLab ou Bitbucket)
 - Node.js v22+ instalado localmente
-- pnpm instalado (`npm install -g pnpm`)
+- Yarn instalado (`npm install -g yarn`)
 
 ## 🏗️ Arquitetura do Monorepo
 
-O projeto usa **Turborepo** para gerenciar o monorepo com dois apps:
+O projeto usa **Yarn** para gerenciar o monorepo com dois apps:
 
 ```
 signal-quality-ai/
 ├── frontend/          # React + Vite app
 ├── backend/           # Express API
-├── turbo.json         # Turborepo config
-├── pnpm-workspace.yaml
+├── vercel.json        # Root config (ignora builds)
+├── frontend/vercel.json
+├── backend/vercel.json
 └── package.json
 ```
+
+**⚠️ IMPORTANTE:** O deploy na Vercel deve ser feito com **projetos separados**, não do repositório root.
 
 ## 🎯 Estratégia de Deploy
 
@@ -51,18 +54,20 @@ Deploy de frontend E backend na Vercel como funções serverless.
 
 1. Acesse [vercel.com/new](https://vercel.com/new)
 2. Importe seu repositório Git
-3. Configure o projeto:
+3. **IMPORTANTE**: Configure o Root Directory:
+   - **Root Directory**: `frontend` ← **OBRIGATÓRIO!**
    - **Framework Preset**: Vite
-   - **Root Directory**: `frontend`
-   - **Build Command**: `turbo run build --filter=frontend` (ou deixe auto-detect)
-   - **Output Directory**: `dist`
-   - **Install Command**: `pnpm install`
+   - **Build Command**: `yarn build` (auto-detectado)
+   - **Output Directory**: `dist` (auto-detectado)
+   - **Install Command**: `yarn install` (auto-detectado)
    - **Node Version**: 22.x
 
 4. Adicione Environment Variables:
    - `VITE_API_URL`: URL do seu backend (ex: `https://api.seudominio.com`)
 
 5. Click em **Deploy**
+
+**⚠️ ATENÇÃO:** Se você não configurar o Root Directory como `frontend`, a Vercel vai tentar fazer build do repositório root e vai falhar com erros do Turbo!
 
 ### 2. Via Vercel CLI
 
@@ -79,9 +84,9 @@ vercel
 # - What's your project's name? signal-quality-ai-frontend
 # - In which directory is your code located? ./
 # - Want to override settings? Yes
-#   - Build Command: turbo run build --filter=frontend
+#   - Build Command: yarn build
 #   - Output Directory: dist
-#   - Development Command: pnpm dev
+#   - Development Command: yarn dev
 
 # Deploy para produção
 vercel --prod
@@ -93,10 +98,10 @@ vercel --prod
 
 1. Crie um **novo projeto** na Vercel
 2. Use o mesmo repositório Git
-3. Configure:
+3. **IMPORTANTE**: Configure o Root Directory:
+   - **Root Directory**: `backend` ← **OBRIGATÓRIO!**
    - **Framework Preset**: Other
-   - **Root Directory**: `backend`
-   - **Build Command**: `turbo run build --filter=backend`
+   - **Build Command**: `yarn build` (auto-detectado)
    - **Output Directory**: `dist`
    - **Node Version**: 22.x
 
@@ -134,17 +139,13 @@ curl https://seu-backend.vercel.app/api/health
 
 9. Atualize a variável `VITE_API_URL` no frontend da Vercel
 
-## 🔄 Remote Caching (Opcional)
+## 🔄 Cache e Performance
 
-Para acelerar builds com Turborepo Remote Cache:
+Para melhorar performance dos builds:
 
-```bash
-# Link com Vercel
-npx turbo login
-npx turbo link
-```
-
-Isso compartilha cache de builds entre local, CI/CD e Vercel.
+- Vercel já faz cache automático de `node_modules` e build outputs
+- Yarn mantém cache local de pacotes
+- Configure dependências como `devDependencies` quando possível para reduzir bundle size
 
 ## 🌍 Configuração de Environment Variables
 
@@ -167,7 +168,7 @@ NODE_ENV=production
 ### Pré-Deploy
 - [ ] Código commitado e pushed para Git
 - [ ] `.env` files configurados localmente
-- [ ] `pnpm build` roda sem erros
+- [ ] `yarn build` roda sem erros no frontend e backend
 - [ ] Testes passando (se houver)
 
 ### Deploy Frontend
@@ -203,28 +204,27 @@ NODE_ENV=production
 - **Solução**: Use Railway/Render para backend
 
 ### Build falha com "Cannot find module"
-- Execute `pnpm install` localmente
-- Verifique se `turbo.json` está na raiz
-- Confira se `pnpm-workspace.yaml` lista os workspaces corretamente
+- Execute `yarn install` localmente na pasta do projeto (frontend ou backend)
+- Verifique se `package.json` tem todas as dependências
+- Confira se você configurou o **Root Directory** corretamente na Vercel
+
+### Vercel tenta usar Turbo automaticamente
+- Adicione `vercel.json` na raiz com `"ignoreCommand": "exit 1"`
+- Configure o **Root Directory** como `frontend` ou `backend` no dashboard
+- Não faça deploy do repositório root, sempre use um subdiretório
 
 ### Environment variables não aparecem
-- No `turbo.json`, declare as env vars no array `env`:
-  ```json
-  {
-    "tasks": {
-      "build": {
-        "env": ["ANTHROPIC_API_KEY", "VITE_API_URL"]
-      }
-    }
-  }
-  ```
+- Adicione as variáveis no dashboard da Vercel em Settings → Environment Variables
+- Variáveis com prefixo `VITE_` são expostas no frontend (cuidado com dados sensíveis!)
+- Rebuilde o projeto após adicionar novas variáveis
 
 ## 📚 Recursos
 
 - [Vercel Monorepos Docs](https://vercel.com/docs/monorepos)
-- [Turborepo Guide](https://turbo.build/repo/docs)
+- [Vercel Root Directory](https://vercel.com/docs/projects/project-configuration#root-directory)
 - [Railway Monorepo Deploy](https://docs.railway.app/deploy/deployments)
 - [Express on Vercel](https://vercel.com/guides/using-express-with-vercel)
+- [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)
 
 ## 🎉 Deploy Bem-Sucedido!
 
