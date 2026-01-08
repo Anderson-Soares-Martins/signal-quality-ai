@@ -8,7 +8,7 @@
     "dev": "echo 'Please run dev:frontend or dev:backend'",
     "dev:backend": "cd backend && yarn dev",
     "dev:frontend": "cd frontend && yarn dev",
-    "build": "echo 'Please run build:frontend or build:backend'",
+    "build": "echo '❌ ERROR: Cannot build from repository root!' && echo '⚠️  You must configure Root Directory in Vercel:' && echo '   - For frontend: Set Root Directory to \"frontend\"' && echo '   - For backend: Set Root Directory to \"backend\"' && echo '📚 See DEPLOYMENT.md for instructions' && exit 1",
     "build:backend": "cd backend && yarn build",
     "build:frontend": "cd frontend && yarn build"
   },
