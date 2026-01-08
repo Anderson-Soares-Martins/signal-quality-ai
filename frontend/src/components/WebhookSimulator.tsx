@@ -19,13 +19,13 @@ interface IncomingSignal {
 const SIMULATED_SIGNALS: Omit<IncomingSignal, "id" | "timestamp">[] = [
   {
     source: "linkedin",
-    type: "linkedin_interaction",
+    type: "linkedin_engagement",
     prospect: { company: "TechCorp", name: "Sarah Johnson" },
     metadata: { action: "commented", post: "Product launch announcement" },
   },
   {
     source: "website",
-    type: "pricing_page_visit",
+    type: "email_interaction",
     prospect: { company: "StartupXYZ", name: "Mike Chen" },
     metadata: { duration: 120, page: "/pricing" },
   },

@@ -11,13 +11,15 @@ interface CustomSignalInputProps {
 }
 
 const SIGNAL_TYPES = [
-  { value: "linkedin_interaction", label: "LinkedIn Interaction", color: "bg-blue-500" },
+  { value: "linkedin_engagement", label: "LinkedIn Engagement", color: "bg-blue-500" },
   { value: "website_visit", label: "Website Visit", color: "bg-green-500" },
-  { value: "pricing_page_visit", label: "Pricing Page Visit", color: "bg-purple-500" },
-  { value: "demo_request", label: "Demo Request", color: "bg-red-500" },
-  { value: "email_open", label: "Email Open", color: "bg-yellow-500" },
+  { value: "email_interaction", label: "Email Interaction", color: "bg-yellow-500" },
   { value: "content_download", label: "Content Download", color: "bg-indigo-500" },
-  { value: "product_trial", label: "Product Trial", color: "bg-pink-500" },
+  { value: "job_change", label: "Job Change", color: "bg-purple-500" },
+  { value: "tech_stack_change", label: "Tech Stack Change", color: "bg-pink-500" },
+  { value: "hiring_signals", label: "Hiring Signals", color: "bg-red-500" },
+  { value: "company_news", label: "Company News", color: "bg-orange-500" },
+  { value: "intent_data", label: "Intent Data", color: "bg-teal-500" },
 ];
 
 export function CustomSignalInput({ onAnalyze, loading }: CustomSignalInputProps) {
@@ -70,7 +72,7 @@ export function CustomSignalInput({ onAnalyze, loading }: CustomSignalInputProps
 
   const renderMetadataFields = (signalType: string) => {
     switch (signalType) {
-      case "linkedin_interaction":
+      case "linkedin_engagement":
         return (
           <div className="space-y-3">
             <div>
@@ -110,46 +112,7 @@ export function CustomSignalInput({ onAnalyze, loading }: CustomSignalInputProps
           </div>
         );
 
-      case "pricing_page_visit":
-        return (
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-medium mb-1 block">Duration (seconds)</label>
-              <input
-                type="number"
-                value={editMetadata.duration || ""}
-                onChange={(e) => setEditMetadata({ ...editMetadata, duration: parseInt(e.target.value) || 0 })}
-                placeholder="e.g., 120"
-                className="w-full px-2 py-1.5 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium mb-1 block">Tier Viewed</label>
-              <select
-                value={editMetadata.tier_viewed || ""}
-                onChange={(e) => setEditMetadata({ ...editMetadata, tier_viewed: e.target.value })}
-                className="w-full px-2 py-1.5 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="">Select tier...</option>
-                <option value="starter">Starter</option>
-                <option value="professional">Professional</option>
-                <option value="enterprise">Enterprise</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-medium mb-1 block">Visit Number</label>
-              <input
-                type="number"
-                value={editMetadata.visitNumber || 1}
-                onChange={(e) => setEditMetadata({ ...editMetadata, visitNumber: parseInt(e.target.value) || 1 })}
-                placeholder="e.g., 3"
-                className="w-full px-2 py-1.5 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-          </div>
-        );
-
-      case "email_open":
+      case "email_interaction":
         return (
           <div className="space-y-3">
             <div>

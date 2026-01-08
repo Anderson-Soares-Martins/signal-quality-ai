@@ -25,12 +25,12 @@ export function SignalTimeline({ signals }: SignalTimelineProps) {
 
   const getSignalColor = (type: string): string => {
     const colorMap: Record<string, string> = {
-      linkedin_interaction: "#0A66C2",
+      linkedin_engagement: "#0A66C2",
       website_visit: "#3B82F6",
       content_engagement: "#10B981",
       email_open: "#F59E0B",
       demo_request: "#EF4444",
-      pricing_page_visit: "#8B5CF6",
+      email_interaction: "#8B5CF6",
     };
     return colorMap[type] || "#6B7280";
   };

@@ -15,7 +15,7 @@ interface SignalConfig {
 
 const DEFAULT_CONFIGS: SignalConfig[] = [
   {
-    type: "pricing_page_visit",
+    type: "email_interaction",
     label: "Pricing Page Visit",
     weight: 25,
     defaultWeight: 25,
@@ -39,7 +39,7 @@ const DEFAULT_CONFIGS: SignalConfig[] = [
     category: "High Intent",
   },
   {
-    type: "linkedin_interaction",
+    type: "linkedin_engagement",
     label: "LinkedIn Interaction",
     weight: 15,
     defaultWeight: 15,
