@@ -198,7 +198,6 @@ Respond ONLY with valid JSON (no markdown):
 function extractWithMock(signal: Signal, prospect: Prospect): LLMExtractionResult {
   const { type } = signal;
   const content = (signal as any).content || (signal as any).text || '';
-  const metadata = signal.metadata || {};
   const action = (signal as any).action || '';
   const page = (signal as any).page || '';
   const duration = (signal as any).duration || 0;
