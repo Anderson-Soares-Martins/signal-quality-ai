@@ -76,6 +76,7 @@ yarn setup
 **💡 Dica:** Execute `yarn help` para ver todos os comandos disponíveis.
 
 **⚠️ Nota:** Este projeto usa `yarn` como gerenciador de pacotes. Se você não tiver yarn instalado:
+
 ```bash
 npm install -g yarn
 ```
@@ -87,20 +88,25 @@ npm install -g yarn
 Abra dois terminais:
 
 **Terminal 1 - Backend:**
+
 ```bash
 yarn dev:backend
 ```
+
 Backend estará disponível em: `http://localhost:3000`
 
 **Terminal 2 - Frontend:**
+
 ```bash
 yarn dev:frontend
 ```
+
 Frontend estará disponível em: `http://localhost:5173`
 
 Abra seu navegador em: **`http://localhost:5173`**
 
 #### Opção B: Usar Process Manager (Opcional)
+
 ```bash
 npm install -g concurrently
 yarn dev  # Tenta usar concurrently automaticamente se instalado
@@ -183,21 +189,25 @@ yarn type-check
 ### Resumo dos Pontos de Teste
 
 ✅ **Verificação Básica:**
+
 - `yarn verify` - Verifica setup completo
 - `yarn health` - Verifica se backend está rodando
 
 ✅ **Testes Funcionais:**
+
 - Interface web em `http://localhost:5173`
 - CLI demos (`yarn demo:high`, `yarn demo:false`, `yarn demo:mixed`)
 - API via cURL
 
 ✅ **Testes Técnicos:**
+
 - `yarn test` - Testes unitários
 - `yarn type-check` - Verificação de tipos
 
 ### Troubleshooting
 
 #### Backend won't start
+
 1. Check if port 3000 is free:
    ```bash
    lsof -i :3000
@@ -212,12 +222,14 @@ yarn type-check
    ```
 
 #### Frontend can't connect to backend
+
 1. Ensure backend is running on port 3000
 2. Check browser console for errors
 3. Verify proxy in `frontend/vite.config.ts`
 4. Try accessing directly: `http://localhost:3000/api/health`
 
 #### Dependencies issues
+
 ```bash
 # Reinstall all dependencies
 rm -rf backend/node_modules frontend/node_modules
@@ -225,6 +237,7 @@ yarn install:all
 ```
 
 #### TypeScript errors
+
 ```bash
 # Check types
 yarn type-check
@@ -234,6 +247,7 @@ yarn build:backend
 ```
 
 #### Port already in use
+
 ```bash
 # Kill process using port 3000 or 5173
 lsof -ti:3000 | xargs kill -9
@@ -241,6 +255,7 @@ lsof -ti:5173 | xargs kill -9
 ```
 
 #### All Available Commands
+
 ```bash
 # Development
 yarn dev:backend      # Start backend dev server
@@ -274,12 +289,14 @@ yarn type-check       # Type-check TypeScript
 ### High-Quality Signal Cluster (Score: 92/100)
 
 **Signals:**
+
 - LinkedIn comment with specific pain point: "50 reps spending 4+ hours daily on CRM updates"
 - 3 pricing page visits (total 4+ minutes, enterprise tier viewed)
 - Downloaded enterprise implementation guide
 - New VP Sales (29 days in role, post-Series B funding)
 
 **Analysis:**
+
 - ✅ Explicit pain point with quantified impact
 - ✅ Bottom-of-funnel research (pricing + implementation)
 - ✅ Budget confirmed (Series B funding)
@@ -289,6 +306,7 @@ yarn type-check       # Type-check TypeScript
 **Pattern Match:** "Active Evaluator with Budget" (81% historical conversion, 12 days to close)
 
 **Recommended Action:**
+
 - Priority: **URGENT**
 - Channel: LinkedIn message
 - Timing: Within 24 hours
@@ -301,11 +319,13 @@ yarn type-check       # Type-check TypeScript
 ### False Positive Detection (Score: 23/100)
 
 **Signals:**
+
 - Website visit to /features (45 seconds, 90% bounce rate)
 - LinkedIn post like (no comment)
 - Email open (no click)
 
 **Analysis:**
+
 - ❌ Shallow engagement across all channels
 - ❌ High bounce rate indicates low interest
 - ❌ No depth of research
@@ -315,6 +335,7 @@ yarn type-check       # Type-check TypeScript
 **Pattern Match:** "Competitor Researcher" (4% historical conversion)
 
 **Recommended Action:**
+
 - Priority: **IGNORE**
 - Type: No action or add to competitor intel tracking
 - Reasoning: Very low conversion probability, likely waste of rep time
@@ -449,6 +470,7 @@ Get example scenarios (high-quality, false-positive, mixed-signals).
 ### 1. Signal Analysis (Quantitative)
 
 Each signal gets a base score (0-100) based on:
+
 - **Signal type** (LinkedIn comment = 85, Like = 30)
 - **Engagement depth** (7-min case study read vs 30-sec bounce)
 - **Intent level** (Pricing page vs blog post)
@@ -457,6 +479,7 @@ Each signal gets a base score (0-100) based on:
 ### 2. Context Extraction (Qualitative)
 
 LLM analyzes unstructured data to extract:
+
 - **Pain points** ("struggling with manual processes")
 - **Urgency** (low/medium/high based on language)
 - **Specificity** (vague interest vs concrete requirements)
@@ -479,11 +502,13 @@ Identifies multi-signal combinations that historically convert:
 ### 4. Quality Scoring
 
 Weighted algorithm combines:
+
 - Individual signal scores (40% weight)
 - Pattern matching bonus (40% weight)
 - Prospect fit (20% weight)
 
 Multipliers applied for:
+
 - Urgency (high = 1.3x, low = 0.7x)
 - Specificity (high = 1.25x, low = 0.8x)
 - Recency (very recent = 1.2x boost)
@@ -492,6 +517,7 @@ Multipliers applied for:
 ### 5. Action Recommendation
 
 Based on quality score + patterns:
+
 - **85-100:** Urgent - drop everything, reach out in 24h
 - **70-84:** High priority - personalized outreach in 48h
 - **50-69:** Medium - monitor for additional signals
@@ -500,13 +526,13 @@ Based on quality score + patterns:
 
 ## Score Interpretation
 
-| Score | Level | Description | Action |
-|-------|-------|-------------|--------|
-| 85-100 | Exceptional | High-quality cluster, strong buying intent | Drop everything, reach out within 24h |
-| 70-84 | Strong | Good signals with context | Prioritize personalized outreach in 48h |
-| 50-69 | Moderate | Some interest but needs more data | Monitor for additional signals |
-| 30-49 | Weak | High false positive risk | Add to nurture, don't pursue actively |
-| 0-29 | Poor | Likely noise | Ignore or remove from prospecting |
+| Score  | Level       | Description                                | Action                                  |
+| ------ | ----------- | ------------------------------------------ | --------------------------------------- |
+| 85-100 | Exceptional | High-quality cluster, strong buying intent | Drop everything, reach out within 24h   |
+| 70-84  | Strong      | Good signals with context                  | Prioritize personalized outreach in 48h |
+| 50-69  | Moderate    | Some interest but needs more data          | Monitor for additional signals          |
+| 30-49  | Weak        | High false positive risk                   | Add to nurture, don't pursue actively   |
+| 0-29   | Poor        | Likely noise                               | Ignore or remove from prospecting       |
 
 ## Project Structure
 
@@ -608,16 +634,19 @@ ANTHROPIC_API_KEY=your_key_here
 ## Why This Approach?
 
 ### vs Traditional Lead Scoring
+
 - ❌ Lead scoring: Evaluates prospects
 - ✅ Signal scoring: Evaluates signals themselves
 - Meta-analysis: "Which signals actually work?"
 
 ### vs Signal Aggregation Tools
+
 - ❌ Aggregation: Collects more signals
 - ✅ Quality scoring: Filters signal noise
 - Prevents signal fatigue instead of contributing to it
 
 ### vs AI Email Tools
+
 - ❌ Email AI: Personalizes outreach
 - ✅ Signal AI: Decides WHO to contact
 - Solves the upstream problem first
@@ -631,18 +660,21 @@ Dado mais tempo para desenvolver esta solução, aqui está minha visão do road
 **Objetivo:** Transformar o sistema em uma máquina de aprendizado contínuo
 
 1. **Feedback Loop de Conversão**
+
    - Coleta automática de feedback sobre resultados de conversão (deals won/lost)
    - Tracking de qual recomendações de ação resultaram em conversão
    - Correlação entre scores de qualidade e resultados reais
    - Métricas: precisão de predição, taxa de falsos positivos, ROI por score
 
 2. **Descoberta Dinâmica de Padrões**
+
    - Substituir padrões hardcoded por machine learning
    - Identificar automaticamente novas combinações de sinais que convertem
    - Detecção de novos padrões emergentes por indústria/geografia
    - Ajuste automático de pesos baseado em performance histórica
 
 3. **Otimização de Mensagens**
+
    - A/B testing de templates de mensagem
    - Análise de quais mensagens geram mais respostas
    - Personalização por persona/indústria/fase do funil
@@ -659,12 +691,14 @@ Dado mais tempo para desenvolver esta solução, aqui está minha visão do road
 **Objetivo:** Conectar com o ecossistema de vendas existente
 
 1. **CRM Integration**
+
    - **Salesforce**: Sync bidirecional de leads, oportunidades e atividades
    - **HubSpot**: Integração nativa com workflows e sequences
    - **Pipedrive**: Auto-criação de deals baseado em scores altos
    - Trigger automático de workflows quando score > 80
 
 2. **Fontes de Dados de Sinais**
+
    - **LinkedIn Sales Navigator**: Importação automática de engajamentos
    - **Website Analytics**: GA4, Segment, Mixpanel para rastreamento de visitas
    - **Intent Data Providers**: 6sense, Bombora, G2 para sinais B2B
@@ -682,18 +716,21 @@ Dado mais tempo para desenvolver esta solução, aqui está minha visão do road
 **Objetivo:** Transformar dados em insights acionáveis para liderança
 
 1. **Monitoramento em Tempo Real**
+
    - Dashboard de sinais em tempo real
    - Alertas automáticos para oportunidades de alta qualidade
    - Notificações push para mobile
    - Score de "hot leads" por rep
 
 2. **Analytics & Business Intelligence**
+
    - Dashboard executivo com KPIs: signal-to-close rate, time-to-conversion
    - Análise de tendências: quais tipos de sinais estão crescendo
    - Previsão de pipeline baseado em qualidade de sinais ativos
    - Análise de performance por rep: quem está melhor em converter sinais
 
 3. **Signal Trend Analysis**
+
    - Identificação de empresas com múltiplos sinais (building momentum)
    - Análise de padrões sazonais por indústria
    - Detecção de mudanças de comportamento (empresa entrando em buying mode)
@@ -708,12 +745,14 @@ Dado mais tempo para desenvolver esta solução, aqui está minha visão do road
 ### 🏗️ Melhorias Técnicas em Paralelo
 
 1. **Performance & Escalabilidade**
+
    - Redis caching para análises repetidas
    - Batch processing para análise de múltiplos prospects
    - Database migration para PostgreSQL/MongoDB
    - Arquitetura de microserviços para componentes independentes
 
 2. **Confiabilidade & Qualidade**
+
    - Testes end-to-end automatizados
    - Monitoring com Sentry/Datadog
    - Circuit breakers para chamadas LLM
@@ -728,16 +767,19 @@ Dado mais tempo para desenvolver esta solução, aqui está minha visão do road
 ### 🎯 Priorização (O Que Faria Primeiro)
 
 **Sprint 1-2 (Semanas 1-4):**
+
 1. Feedback loop básico (coleta de resultados de conversão)
 2. Integração com Salesforce (mais comum)
 3. Dashboard básico de analytics
 
 **Sprint 3-4 (Semanas 5-8):**
+
 1. Descoberta automática de padrões (ML simples)
 2. Integração LinkedIn Sales Navigator
 3. Alertas em tempo real
 
 **Sprint 5-6 (Semanas 9-12):**
+
 1. A/B testing de mensagens
 2. Account-based scoring
 3. Dashboard executivo completo
@@ -745,6 +787,7 @@ Dado mais tempo para desenvolver esta solução, aqui está minha visão do road
 ### 💡 Visão de Longo Prazo
 
 Transformar esta solução em uma **plataforma de inteligência de sinais** que:
+
 - Não apenas analisa sinais, mas **prevê** quando empresas estão entrando em buying mode
 - Aprende continuamente com cada interação e conversão
 - Se torna o "sistema nervoso central" para equipes de vendas B2B
@@ -755,24 +798,28 @@ Transformar esta solução em uma **plataforma de inteligência de sinais** que:
 ## Technical Decisions
 
 ### Why Node.js?
+
 - Fast prototyping with Express
 - Native JSON handling
 - Easy async/await for LLM calls
 - Large ecosystem for integrations
 
 ### Why Zod?
+
 - Runtime type validation
 - Great error messages
 - Auto-generate TypeScript types
 - Schema-driven development
 
 ### Why Claude API?
+
 - Best-in-class reasoning for qualitative analysis
 - Strong JSON output formatting
 - Excellent at extracting structured insights
 - Can handle long context (for multi-signal analysis)
 
 ### Why JSON Storage?
+
 - Fast to prototype
 - Easy to inspect/debug
 - Version control friendly
@@ -782,11 +829,13 @@ Transformar esta solução em uma **plataforma de inteligência de sinais** que:
 ## Performance Considerations
 
 **Current (MVP):**
+
 - Handles single analysis: ~500-1000ms (with real LLM)
 - Handles single analysis: ~50-100ms (with mock LLM)
 - No caching, no batching
 
 **Production Optimizations:**
+
 - Redis caching for repeated prospects
 - Batch LLM requests (analyze 10 prospects in parallel)
 - Database indexing on prospect/company
@@ -808,6 +857,7 @@ MIT
 ## Contact
 
 For questions about this implementation or approach:
+
 - Technical questions: See code comments
 - Conceptual questions: Review ARCHITECTURE.md (if provided)
 
@@ -818,18 +868,21 @@ For questions about this implementation or approach:
 This solution addresses a 2025-specific problem that emerged with the explosion of signal-based selling:
 
 **Market Context:**
+
 - 95% of buyers aren't actively seeking solutions (UserGems, 2025)
 - 56% of sales pros use AI daily (LinkedIn, 2025)
 - 79% use automation but only 30% hit ROI targets (ZoomInfo, 2025)
 - Sales reps spend only 30% of time with customers (Bain, 2025)
 
 **The Signal Fatigue Problem:**
+
 - Too many tools generating too many "signals"
 - No way to separate signal from noise
 - Reps chase false positives
 - Miss genuine opportunities in the noise
 
 **This Solution:**
+
 - Meta-analysis of signals themselves
 - Learns which signal types actually convert
 - Prevents wasted time on false positives
