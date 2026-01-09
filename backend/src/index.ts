@@ -29,8 +29,10 @@ app.use(errorHandler);
 // Start server (only in development, not in Vercel serverless)
 if (process.env.VERCEL !== '1') {
   app.listen(PORT, () => {
+    const llmProvider = process.env.LLM_PROVIDER || 'mock';
+    const providerName = llmProvider === 'anthropic' ? 'Anthropic Claude Sonnet 4' : 'Mock (rule-based)';
     logger.info(`🚀 Signal Quality Score AI API running on port ${PORT}`);
-    logger.info('LLM Provider: Anthropic Claude Sonnet 4');
+    logger.info(`LLM Provider: ${providerName}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     logger.info('');
     logger.info('Available endpoints:');

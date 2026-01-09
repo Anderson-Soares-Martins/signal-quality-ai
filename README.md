@@ -56,72 +56,217 @@ An AI-powered system that:
 └─────────────────────────────────────────────────────┘
 ```
 
-## Quick Start
+## 🚀 Guia de Execução e Teste
 
-### Installation
+### Passo 1: Instalação
 
 ```bash
-# Clone the repository
+# Clone o repositório
 git clone <repo-url>
 cd signal-quality-ai
 
-# Install dependencies
-npm install
+# Instale todas as dependências e configure o ambiente
+yarn setup
 
-# Copy environment configuration
-cp .env.example .env
-
-# (Optional) Add your Anthropic API key to .env
-# LLM_PROVIDER=anthropic
-# ANTHROPIC_API_KEY=your_key_here
-
-# Or use mock mode (default, no API key needed)
-# LLM_PROVIDER=mock
+# Isso irá:
+# - Instalar dependências do backend e frontend
+# - Criar arquivo .env no backend (se não existir)
 ```
 
-### Run the Demo
+**💡 Dica:** Execute `yarn help` para ver todos os comandos disponíveis.
 
-The fastest way to see the system in action:
-
+**⚠️ Nota:** Este projeto usa `yarn` como gerenciador de pacotes. Se você não tiver yarn instalado:
 ```bash
-# Analyze a high-quality signal cluster
-npm run demo high
-
-# Analyze a false positive
-npm run demo false
-
-# Analyze mixed signals
-npm run demo mixed
+npm install -g yarn
 ```
 
-### Start the API Server
+### Passo 2: Executar a Aplicação
 
+#### Opção A: Executar Backend e Frontend Separadamente (Recomendado)
+
+Abra dois terminais:
+
+**Terminal 1 - Backend:**
 ```bash
-# Start the server
-npm start
+yarn dev:backend
+```
+Backend estará disponível em: `http://localhost:3000`
 
-# Or with auto-reload for development
-npm run dev
+**Terminal 2 - Frontend:**
+```bash
+yarn dev:frontend
+```
+Frontend estará disponível em: `http://localhost:5173`
 
-# Server runs on http://localhost:3000
+Abra seu navegador em: **`http://localhost:5173`**
+
+#### Opção B: Usar Process Manager (Opcional)
+```bash
+npm install -g concurrently
+yarn dev  # Tenta usar concurrently automaticamente se instalado
 ```
 
-### Test the API
+### Passo 3: Verificar Instalação
 
 ```bash
-# Health check
+# Verificar se tudo está configurado corretamente
+yarn verify
+
+# Verificar se o backend está rodando
+yarn health
+```
+
+### Passo 4: Testar a Solução
+
+#### 4.1. Via Interface Web (Mais Fácil)
+
+1. Certifique-se de que backend e frontend estão rodando (Passo 2)
+2. Acesse `http://localhost:5173` no navegador
+3. Selecione um cenário de exemplo:
+   - **High-Quality Signal** - Exemplo de sinais de alta qualidade (Score: ~90)
+   - **False Positive** - Exemplo de falso positivo (Score: ~20)
+   - **Mixed Signals** - Exemplo de sinais mistos (Score: ~50)
+4. Explore a interface:
+   - Veja o score de qualidade (0-100)
+   - Analise o breakdown de cada sinal
+   - Verifique os padrões identificados
+   - Leia as recomendações de ação
+
+#### 4.2. Via CLI (Demo Rápido)
+
+```bash
+# Demo com sinais de alta qualidade
+yarn demo:high
+
+# Demo com falso positivo
+yarn demo:false
+
+# Demo com sinais mistos
+yarn demo:mixed
+
+# Menu interativo
+yarn demo
+```
+
+#### 4.3. Via API (cURL)
+
+Com o backend rodando (`yarn dev:backend`):
+
+```bash
+# Health check - verificar se API está respondendo
 curl http://localhost:3000/api/health
 
-# Analyze signals (see examples/ folder for sample data)
+# Analisar sinais - exemplo de alta qualidade
 curl -X POST http://localhost:3000/api/analyze \
   -H "Content-Type: application/json" \
-  -d @data/examples/high-quality.json
+  -d @backend/data/examples/high-quality.json
 
-# Get known patterns
+# Obter padrões conhecidos
 curl http://localhost:3000/api/patterns
 
-# Get example scenarios
+# Obter exemplos de cenários
 curl http://localhost:3000/api/examples/high-quality
+curl http://localhost:3000/api/examples/false-positive
+curl http://localhost:3000/api/examples/mixed-signals
+```
+
+#### 4.4. Executar Testes Unitários
+
+```bash
+# Executar testes do backend
+yarn test
+
+# Verificar tipos TypeScript
+yarn type-check
+```
+
+### Resumo dos Pontos de Teste
+
+✅ **Verificação Básica:**
+- `yarn verify` - Verifica setup completo
+- `yarn health` - Verifica se backend está rodando
+
+✅ **Testes Funcionais:**
+- Interface web em `http://localhost:5173`
+- CLI demos (`yarn demo:high`, `yarn demo:false`, `yarn demo:mixed`)
+- API via cURL
+
+✅ **Testes Técnicos:**
+- `yarn test` - Testes unitários
+- `yarn type-check` - Verificação de tipos
+
+### Troubleshooting
+
+#### Backend won't start
+1. Check if port 3000 is free:
+   ```bash
+   lsof -i :3000
+   ```
+2. Verify the `.env` file exists:
+   ```bash
+   ls backend/.env
+   ```
+3. Check dependencies:
+   ```bash
+   yarn check:deps
+   ```
+
+#### Frontend can't connect to backend
+1. Ensure backend is running on port 3000
+2. Check browser console for errors
+3. Verify proxy in `frontend/vite.config.ts`
+4. Try accessing directly: `http://localhost:3000/api/health`
+
+#### Dependencies issues
+```bash
+# Reinstall all dependencies
+rm -rf backend/node_modules frontend/node_modules
+yarn install:all
+```
+
+#### TypeScript errors
+```bash
+# Check types
+yarn type-check
+
+# Or build to see all errors
+yarn build:backend
+```
+
+#### Port already in use
+```bash
+# Kill process using port 3000 or 5173
+lsof -ti:3000 | xargs kill -9
+lsof -ti:5173 | xargs kill -9
+```
+
+#### All Available Commands
+```bash
+# Development
+yarn dev:backend      # Start backend dev server
+yarn dev:frontend     # Start frontend dev server
+yarn start            # Start backend in production mode
+
+# Demos
+yarn demo             # Interactive demo menu
+yarn demo:high        # High-quality signal demo
+yarn demo:false       # False positive demo
+yarn demo:mixed       # Mixed signals demo
+
+# Verification
+yarn verify           # Check complete setup
+yarn check:deps       # Check dependencies
+yarn check:env        # Check .env file
+yarn check:build      # Check TypeScript builds
+yarn health           # Check if backend is running
+
+# Build
+yarn build:backend    # Build backend
+yarn build:frontend   # Build frontend
+
+# Testing
+yarn test             # Run backend tests
+yarn type-check       # Type-check TypeScript
 ```
 
 ## Example: High-Quality vs False Positive
@@ -477,27 +622,135 @@ ANTHROPIC_API_KEY=your_key_here
 - ✅ Signal AI: Decides WHO to contact
 - Solves the upstream problem first
 
-## What I'd Build Next
+## 🔮 Próximos Passos - O Que Faria a Seguir
 
-If given more time, here's the 6-month roadmap:
+Dado mais tempo para desenvolver esta solução, aqui está minha visão do roadmap para transformar este MVP em uma plataforma completa de qualidade de sinais:
 
-### Phase 2: Learning Loop (Months 2-3)
-- Feedback collection on conversion outcomes
-- Dynamic pattern discovery (not hardcoded)
-- A/B testing for message templates
-- Industry-specific weight tuning
+### 📊 Fase 2: Learning Loop & Melhoria Contínua (Meses 2-3)
 
-### Phase 3: Integrations (Months 3-4)
-- Salesforce/HubSpot CRM integration
-- LinkedIn Sales Navigator connector
-- Website analytics (GA4, Segment)
-- Intent data providers (6sense, Bombora)
+**Objetivo:** Transformar o sistema em uma máquina de aprendizado contínuo
 
-### Phase 4: Intelligence Layer (Months 5-6)
-- Real-time signal monitoring
-- Automated alerting for high-quality clusters
-- Team performance analytics
-- Signal trend analysis dashboard
+1. **Feedback Loop de Conversão**
+   - Coleta automática de feedback sobre resultados de conversão (deals won/lost)
+   - Tracking de qual recomendações de ação resultaram em conversão
+   - Correlação entre scores de qualidade e resultados reais
+   - Métricas: precisão de predição, taxa de falsos positivos, ROI por score
+
+2. **Descoberta Dinâmica de Padrões**
+   - Substituir padrões hardcoded por machine learning
+   - Identificar automaticamente novas combinações de sinais que convertem
+   - Detecção de novos padrões emergentes por indústria/geografia
+   - Ajuste automático de pesos baseado em performance histórica
+
+3. **Otimização de Mensagens**
+   - A/B testing de templates de mensagem
+   - Análise de quais mensagens geram mais respostas
+   - Personalização por persona/indústria/fase do funil
+   - Integração com ferramentas de email marketing
+
+4. **Tuning por Contexto**
+   - Pesos específicos por indústria (SaaS vs Manufacturing vs Healthcare)
+   - Ajustes por tamanho de empresa (SMB vs Enterprise)
+   - Calibração por região/mercado
+   - Aprendizado de preferências por equipe de vendas
+
+### 🔌 Fase 3: Integrações & Automação (Meses 3-4)
+
+**Objetivo:** Conectar com o ecossistema de vendas existente
+
+1. **CRM Integration**
+   - **Salesforce**: Sync bidirecional de leads, oportunidades e atividades
+   - **HubSpot**: Integração nativa com workflows e sequences
+   - **Pipedrive**: Auto-criação de deals baseado em scores altos
+   - Trigger automático de workflows quando score > 80
+
+2. **Fontes de Dados de Sinais**
+   - **LinkedIn Sales Navigator**: Importação automática de engajamentos
+   - **Website Analytics**: GA4, Segment, Mixpanel para rastreamento de visitas
+   - **Intent Data Providers**: 6sense, Bombora, G2 para sinais B2B
+   - **Marketing Automation**: Marketo, Pardot, Eloqua para email signals
+   - **Social Listening**: Awario, Brandwatch para menções da empresa
+
+3. **Automação de Ações**
+   - Envio automático de emails personalizados quando score > 70
+   - Criação automática de tasks no CRM
+   - Notificações em Slack/MS Teams para scores urgentes (>85)
+   - Agendamento automático de follow-ups baseado em timing
+
+### 🎯 Fase 4: Intelligence Layer & Analytics (Meses 5-6)
+
+**Objetivo:** Transformar dados em insights acionáveis para liderança
+
+1. **Monitoramento em Tempo Real**
+   - Dashboard de sinais em tempo real
+   - Alertas automáticos para oportunidades de alta qualidade
+   - Notificações push para mobile
+   - Score de "hot leads" por rep
+
+2. **Analytics & Business Intelligence**
+   - Dashboard executivo com KPIs: signal-to-close rate, time-to-conversion
+   - Análise de tendências: quais tipos de sinais estão crescendo
+   - Previsão de pipeline baseado em qualidade de sinais ativos
+   - Análise de performance por rep: quem está melhor em converter sinais
+
+3. **Signal Trend Analysis**
+   - Identificação de empresas com múltiplos sinais (building momentum)
+   - Análise de padrões sazonais por indústria
+   - Detecção de mudanças de comportamento (empresa entrando em buying mode)
+   - Predição de quando fazer outreach baseado em padrões históricos
+
+4. **Advanced Features**
+   - **Multi-signal clustering**: Agrupar sinais relacionados de múltiplos prospects da mesma empresa
+   - **Competitive intelligence**: Identificar quando empresas estão avaliando concorrentes
+   - **Buying committee mapping**: Identificar todos os stakeholders envolvidos na decisão
+   - **Account-based scoring**: Score agregado por conta (não apenas prospect individual)
+
+### 🏗️ Melhorias Técnicas em Paralelo
+
+1. **Performance & Escalabilidade**
+   - Redis caching para análises repetidas
+   - Batch processing para análise de múltiplos prospects
+   - Database migration para PostgreSQL/MongoDB
+   - Arquitetura de microserviços para componentes independentes
+
+2. **Confiabilidade & Qualidade**
+   - Testes end-to-end automatizados
+   - Monitoring com Sentry/Datadog
+   - Circuit breakers para chamadas LLM
+   - Retry logic e fallbacks
+
+3. **Segurança & Compliance**
+   - GDPR compliance para dados de prospects
+   - Encriptação de dados sensíveis
+   - Audit logs para todas as análises
+   - Rate limiting e throttling
+
+### 🎯 Priorização (O Que Faria Primeiro)
+
+**Sprint 1-2 (Semanas 1-4):**
+1. Feedback loop básico (coleta de resultados de conversão)
+2. Integração com Salesforce (mais comum)
+3. Dashboard básico de analytics
+
+**Sprint 3-4 (Semanas 5-8):**
+1. Descoberta automática de padrões (ML simples)
+2. Integração LinkedIn Sales Navigator
+3. Alertas em tempo real
+
+**Sprint 5-6 (Semanas 9-12):**
+1. A/B testing de mensagens
+2. Account-based scoring
+3. Dashboard executivo completo
+
+### 💡 Visão de Longo Prazo
+
+Transformar esta solução em uma **plataforma de inteligência de sinais** que:
+- Não apenas analisa sinais, mas **prevê** quando empresas estão entrando em buying mode
+- Aprende continuamente com cada interação e conversão
+- Se torna o "sistema nervoso central" para equipes de vendas B2B
+- Reduz time-to-conversion em 50% e aumenta conversion rate em 30%
+
+**Valor Proposto:** Se hoje reps gastam 70% do tempo em sinais que não convertem, a meta é inverter isso: **70% do tempo focado nos 20% de sinais que realmente convertem**.
 
 ## Technical Decisions
 

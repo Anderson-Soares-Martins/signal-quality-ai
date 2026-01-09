@@ -21,16 +21,19 @@ interface LLMExtractionResult {
   keyInsights?: string[];
 }
 
+const LLM_PROVIDER = process.env.LLM_PROVIDER || 'mock';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-if (!ANTHROPIC_API_KEY) {
-  throw new Error('ANTHROPIC_API_KEY is required. Please set it in your .env file.');
+// Initialize Anthropic client (only if using Anthropic provider)
+let anthropic: Anthropic | null = null;
+if (LLM_PROVIDER === 'anthropic') {
+  if (!ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY is required when LLM_PROVIDER=anthropic. Please set it in your .env file or use LLM_PROVIDER=mock.');
+  }
+  anthropic = new Anthropic({
+    apiKey: ANTHROPIC_API_KEY
+  });
 }
-
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: ANTHROPIC_API_KEY
-});
 
 /**
  * Build signal-specific analysis guidelines
@@ -190,9 +193,129 @@ Respond ONLY with valid JSON (no markdown):
 }
 
 /**
+ * Mock LLM extraction - rule-based context extraction (no API key required)
+ */
+function extractWithMock(signal: Signal, prospect: Prospect): LLMExtractionResult {
+  const { type } = signal;
+  const content = (signal as any).content || (signal as any).text || '';
+  const metadata = signal.metadata || {};
+  const action = (signal as any).action || '';
+  const page = (signal as any).page || '';
+  const duration = (signal as any).duration || 0;
+  const visitNumber = (signal as any).visitNumber || 1;
+
+  // Extract pain points from content
+  const painPoints: string[] = [];
+  const painKeywords = ['struggling', 'problem', 'issue', 'challenge', 'need', 'waste', 'slow', 'inefficient', 'difficult', 'frustrated'];
+  const contentLower = content.toLowerCase();
+  painKeywords.forEach(keyword => {
+    if (contentLower.includes(keyword)) {
+      const sentenceMatch = content.match(new RegExp(`[^.!?]*${keyword}[^.!?]*[.!?]?`, 'i'));
+      if (sentenceMatch) {
+        painPoints.push(sentenceMatch[0].trim());
+      }
+    }
+  });
+  if (painPoints.length === 0 && content.length > 50) {
+    painPoints.push('Potential interest indicated by engagement');
+  }
+
+  // Determine urgency based on keywords and behavior
+  let urgency: 'low' | 'medium' | 'high' = 'medium';
+  const urgencyKeywords = ['urgent', 'asap', 'immediately', 'quickly', 'deadline', 'yesterday', 'now'];
+  if (urgencyKeywords.some(k => contentLower.includes(k))) {
+    urgency = 'high';
+  } else if (type.includes('pricing') || type.includes('demo') || visitNumber >= 3) {
+    urgency = 'high';
+  } else if (type.includes('job_change') && (signal as any).daysInRole && (signal as any).daysInRole < 90) {
+    urgency = 'medium';
+  } else if (duration < 30 || type.includes('like') || action === 'like') {
+    urgency = 'low';
+  }
+
+  // Determine specificity
+  let specificity: 'low' | 'medium' | 'high' = 'medium';
+  if (content.length > 100 || type.includes('pricing') || type.includes('demo') || type.includes('content_download')) {
+    specificity = 'high';
+  } else if (content.length < 30 || type.includes('like') || duration < 30) {
+    specificity = 'low';
+  }
+
+  // Determine buying stage
+  let buyingStage: 'awareness' | 'consideration' | 'decision' | 'unknown' = 'unknown';
+  if (type.includes('pricing') || type.includes('demo') || type.includes('trial')) {
+    buyingStage = 'decision';
+  } else if (type.includes('content_download') || page.includes('case-study') || page.includes('features')) {
+    buyingStage = 'consideration';
+  } else if (page.includes('blog') || type.includes('like')) {
+    buyingStage = 'awareness';
+  }
+
+  // Determine sentiment
+  let sentiment: 'positive' | 'negative' | 'neutral' = 'neutral';
+  const positiveWords = ['love', 'great', 'excellent', 'helpful', 'good', 'interested', 'excited'];
+  const negativeWords = ['struggling', 'frustrated', 'difficult', 'problem', 'issue', 'waste'];
+  if (positiveWords.some(w => contentLower.includes(w))) {
+    sentiment = 'positive';
+  } else if (negativeWords.some(w => contentLower.includes(w))) {
+    sentiment = 'negative';
+  }
+
+  // Determine false positive risk
+  let falsePositiveRisk: 'low' | 'medium' | 'high' = 'medium';
+  const falsePositiveIndicators = ['competitor', 'student', '@gmail.com', '@yahoo.com'];
+  const bounceRate = (signal as any).bounceRate;
+  if (falsePositiveIndicators.some(ind => contentLower.includes(ind) || (prospect.email && prospect.email.toLowerCase().includes(ind)))) {
+    falsePositiveRisk = 'high';
+  } else if (duration < 10 || (bounceRate !== undefined && bounceRate > 0.9) || action === 'like' && !content) {
+    falsePositiveRisk = 'high';
+  } else if (type.includes('pricing') || type.includes('demo') || content.length > 50) {
+    falsePositiveRisk = 'low';
+  }
+
+  const falsePositiveReasons: string[] = [];
+  if (falsePositiveRisk === 'high') {
+    if (duration < 10) falsePositiveReasons.push('Very short engagement duration');
+    if (action === 'like' && !content) falsePositiveReasons.push('Passive interaction only');
+    if (bounceRate && bounceRate > 0.9) falsePositiveReasons.push('High bounce rate');
+  }
+
+  // Generate key insights
+  const keyInsights: string[] = [];
+  if (painPoints.length > 0) {
+    keyInsights.push(`Pain points identified: ${painPoints.slice(0, 2).join(', ')}`);
+  }
+  if (urgency === 'high') {
+    keyInsights.push('High urgency indicators detected');
+  }
+  if (buyingStage === 'decision') {
+    keyInsights.push('Prospect in decision stage');
+  }
+
+  const confidence = urgency === 'high' && specificity === 'high' ? 0.85 : urgency === 'medium' ? 0.7 : 0.6;
+
+  return {
+    painPoints: painPoints.length > 0 ? painPoints : ['Engagement indicates interest'],
+    urgency,
+    urgencyReasoning: urgency === 'high' ? 'High-engagement signals detected' : urgency === 'low' ? 'Low-engagement activity' : 'Moderate engagement level',
+    specificity,
+    specificityReasoning: specificity === 'high' ? 'Specific intent indicators present' : specificity === 'low' ? 'Generic engagement' : 'Moderate specificity',
+    buyingStage,
+    sentiment,
+    falsePositiveRisk,
+    falsePositiveReasons: falsePositiveReasons.length > 0 ? falsePositiveReasons : undefined,
+    confidence,
+    keyInsights: keyInsights.length > 0 ? keyInsights : ['Monitor for additional signals']
+  };
+}
+
+/**
  * Extract context using Anthropic Claude API
  */
 async function extractWithClaude(signal: Signal, prospect: Prospect): Promise<LLMExtractionResult> {
+  if (!anthropic) {
+    throw new Error('Anthropic client not initialized');
+  }
   const prompt = buildExtractionPrompt(signal, prospect);
 
   try {
@@ -240,13 +363,21 @@ export async function enrichSignalsWithContext(
   analyzedSignals: AnalyzedSignal[],
   prospect: Prospect
 ): Promise<AnalyzedSignal[]> {
-  logger.info(`Enriching ${analyzedSignals.length} signals with Claude Sonnet 4`);
+  const providerName = LLM_PROVIDER === 'anthropic' ? 'Claude Sonnet 4' : 'Mock (rule-based)';
+  logger.info(`Enriching ${analyzedSignals.length} signals with ${providerName}`);
 
   const enrichedSignals: AnalyzedSignal[] = [];
 
   for (const signal of analyzedSignals) {
     try {
-      const qualitativeContext = await extractWithClaude(signal.rawData as Signal, prospect);
+      let qualitativeContext: LLMExtractionResult;
+      
+      if (LLM_PROVIDER === 'anthropic') {
+        qualitativeContext = await extractWithClaude(signal.rawData as Signal, prospect);
+      } else {
+        // Use mock mode (rule-based)
+        qualitativeContext = extractWithMock(signal.rawData as Signal, prospect);
+      }
 
       // Merge LLM context with existing analysis
       enrichedSignals.push({
@@ -275,5 +406,9 @@ export async function extractContextFromSignal(
   signal: Signal,
   prospect: Prospect
 ): Promise<LLMExtractionResult> {
-  return await extractWithClaude(signal, prospect);
+  if (LLM_PROVIDER === 'anthropic') {
+    return await extractWithClaude(signal, prospect);
+  } else {
+    return extractWithMock(signal, prospect);
+  }
 }

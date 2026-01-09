@@ -1,6 +1,7 @@
 import type { Signal, Prospect, AnalysisResult, ExampleScenario } from './types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// Use proxy in development, or VITE_API_URL if set in production
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'http://localhost:3000/api');
 
 export async function analyzeSignals(
   signals: Signal[],
